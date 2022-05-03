@@ -1,5 +1,7 @@
 var expect = require("chai").expect;
 var db = require("../database");
+var request = require("request");
+
 describe("SQLite Database", function() {
   it("SQLite Module Export correctly", function() {
     expect(db != null).to.equal(true);
@@ -35,3 +37,34 @@ describe("SQLite Database", function() {
     });
   })
 })
+
+describe("API Test", function() {   
+  var url = "http://localhost/";
+
+  it("Media size api working", function () { 
+    request(url + "total/User1", function(error, response, body) {
+      expect(error == null, "Server is not running").to.equal(true);
+      expect(response.statusCode, "Return status 200").to.equal(200);
+      const respData = JSON.parse(body);
+      expect(respData.data.total).to.equal(450);
+    })
+  })
+
+  it("Video size api working", function () { 
+    request(url + "video/Video1", function(error, response, body) {
+      expect(error == null, "Server is not running").to.equal(true);
+      expect(response.statusCode, "Return status 200").to.equal(200);
+      const respData = JSON.parse(body);
+      expect(respData.data.size).to.equal(120);
+    })
+  })
+
+  it("Video update api working", function () { 
+    request(url + "Video1/100/10", { method: "patch"},  function(error, response, body) {
+      expect(error == null, "Server is not running").to.equal(true);
+      expect(response.statusCode, "Return status 200").to.equal(200);
+      const respData = JSON.parse(body);
+      expect(respData.message).to.equal("success");
+    })
+  })
+});
